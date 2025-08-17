@@ -18,10 +18,15 @@ args = parser.parse_args()
 
 # ----------------- Load Data -----------------
 df = pd.read_csv(args.data)
-
 target = args.target
+
 if target not in df.columns:
     raise ValueError(f"❌ Target column '{target}' not found in dataset! Available: {df.columns.tolist()}")
+
+# ----------------- Ensure City Column Exists -----------------
+if "city" not in df.columns:
+    print("⚠️ No 'city' column found. Adding a dummy 'city' column with value 'Unknown'.")
+    df["city"] = "Unknown"
 
 X = df.drop(columns=[target])
 y = df[target]
