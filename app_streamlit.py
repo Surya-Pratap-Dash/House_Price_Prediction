@@ -3,39 +3,49 @@ import pandas as pd
 import joblib
 import json
 
-# Load model & metadata
+# ----------------- Load Model & Metadata -----------------
 model = joblib.load("model.joblib")
+
 with open("metadata.json", "r") as f:
     metadata = json.load(f)
 
-st.title("🏠 House Price Prediction")
+target = metadata["target"]
+numeric_features = metadata["numeric_features"]
+categorical_features = metadata["categorical_features"]
+categorical_options = metadata["categorical_options"]
 
-mode = st.radio("Choose Mode:", ["Single Prediction", "Batch Prediction"])
+st.title("🏡 House Price Prediction App")
 
-if mode == "Single Prediction":
-    st.header("Enter House Details")
+st.markdown("Fill in the details below to predict the house price:")
 
-    input_data = {}
-    # Numeric features
-    for col in metadata["numeric_features"]:
-        input_data[col] = st.number_input(f"{col}", step=1.0)
+# ----------------- Collect User Inputs -----------------
+user_input = {}
 
-    # Categorical features
-    for col in metadata["categorical_features"]:
-        input_data[col] = st.selectbox(f"{col}", metadata["categorical_options"][col])
+# Numeric inputs
+for col in numeric_features:
+    user_input[col] = st.number_input(f"Enter {col}:", value=0.0)
 
-    if st.button("Predict"):
-        df_input = pd.DataFrame([input_data])
-        prediction = model.predict(df_input)[0]
-        st.success(f"🏷 Predicted Price: ₹ {prediction:,.0f}")
+# Handle CITY separately (only once)
+#if "city" in categorical_features:
+    #options = categorical_options.get("city", ["Unknown"])
+    #user_input["city"] = st.selectbox("Select City:", options)
 
-else:
-    st.header("Upload CSV for Batch Prediction")
-    file = st.file_uploader("Upload CSV", type="csv")
+# Handle OTHER categorical features
+for col in categorical_features:
+    if col == "city":  # skip city, already handled
+        continue
+    options = categorical_options.get(col, ["Unknown"])
+    default_val = options[0] if options else "Unknown"
+    user_input[col] = st.selectbox(f"Select {col}:", options, index=0)
 
-    if file:
-        df = pd.read_csv(file)
-        preds = model.predict(df)
-        df["PredictedPrice"] = preds
-        st.write(df)
-        st.download_button("Download Predictions", df.to_csv(index=False), "predictions.csv")
+# ----------------- Prediction -----------------
+if st.button("Predict Price"):
+    df_input = pd.DataFrame([user_input])
+
+    # ✅ Ensure all training columns exist in input
+    for col in numeric_features + categorical_features:
+        if col not in df_input.columns:
+            df_input[col] = "Unknown" if col in categorical_features else 0.0
+
+    prediction = model.predict(df_input)[0]
+    st.success(f"💰 Predicted {target}: {prediction:,.2f}")
