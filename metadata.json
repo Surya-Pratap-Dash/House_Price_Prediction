@@ -14,7 +14,9 @@
         "hotwaterheating",
         "airconditioning",
         "prefarea",
-        "furnishingstatus"
+        "furnishingstatus",
+        "City",
+        "city"
     ],
     "categorical_options": {
         "mainroad": [
@@ -45,6 +47,39 @@
             "furnished",
             "semi-furnished",
             "unfurnished"
+        ],
+        "City": [
+            "Delhi",
+            "Mumbai",
+            "Bangalore",
+            "Hyderabad",
+            "Chennai",
+            "Kolkata",
+            "Pune",
+            "Ahmedabad",
+            "Bhubaneswar",
+            "Cuttack",
+            "Rourkela",
+            "Sambalpur",
+            "Durgapur",
+            "Siliguri",
+            "Jamshedpur",
+            "Ranchi",
+            "Patna",
+            "Gaya",
+            "Varanasi",
+            "Prayagraj",
+            "Gorakhpur",
+            "Kanpur",
+            "Bareilly",
+            "Meerut",
+            "Indore",
+            "Bhopal",
+            "Raipur",
+            "Nagpur"
+        ],
+        "city": [
+            "Unknown"
         ]
     }
 }
